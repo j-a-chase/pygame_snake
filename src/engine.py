@@ -9,6 +9,7 @@ import pygame
 from pygame import display
 from typing import Tuple
 from random import choice
+from src.color import Color
 
 from os.path import isfile
 
@@ -33,11 +34,11 @@ class Engine:
         pygame.init()
 
         # initialize colors
-        self.WHITE = (255, 255, 255)
-        self.BLACK = (0, 0, 0)
-        self.BLUE = (0, 0, 255)
-        self.GREEN = (0, 255, 0)
-        self.RED = (255, 0, 0)
+        self.BG_COLOR = Color().known_color('white')
+        self.TEXT_COLOR = Color().known_color('black')
+        self.SCORE_COLOR = Color().known_color('blue')
+        self.SNAKE_COLOR = Color().known_color('green')
+        self.FOOD_COLOR = Color().known_color('red')
 
         # initialize difficulty
         difficulties = {
@@ -73,7 +74,7 @@ class Engine:
         self.snake_height = int(height // 40)
 
         self.score = 0
-        self.score_text = self.score_font.render(f'{self.score}', 1, self.BLUE)
+        self.score_text = self.score_font.render(f'{self.score}', 1, self.SCORE_COLOR)
 
         self.food_coord = None
 
@@ -91,7 +92,7 @@ class Engine:
 
         Returns: None
         '''
-        self.window.fill(self.WHITE)
+        self.window.fill(self.BG_COLOR)
         display.update()
 
     def instructions(self) -> None:
@@ -106,7 +107,7 @@ class Engine:
         self.update_screen()
 
         # render title
-        instructions_title = self.title_font.render('HOW TO PLAY:', 1, self.BLACK)
+        instructions_title = self.title_font.render('HOW TO PLAY:', 1, self.TEXT_COLOR)
 
         # position instructions on screen, coded this way for easy adjustment
         x_pos = self.w // 2 - (3 * self.title_font_size)
@@ -114,9 +115,9 @@ class Engine:
 
         # print instructions on screen and update
         self.window.blit(instructions_title, (x_pos, y_pos * 0.4))
-        self.window.blit(self.text_font.render('- Arrow Keys to Move', 1, self.BLACK), (x_pos, y_pos * 0.45))
-        self.window.blit(self.text_font.render('- Enter to Start / Restart', 1, self.BLACK), (x_pos, y_pos * 0.48))
-        self.window.blit(self.text_font.render('- Q to Exit', 1, self.BLACK), (x_pos, y_pos * .51))
+        self.window.blit(self.text_font.render('- Arrow Keys to Move', 1, self.TEXT_COLOR), (x_pos, y_pos * 0.45))
+        self.window.blit(self.text_font.render('- Enter to Start / Restart', 1, self.TEXT_COLOR), (x_pos, y_pos * 0.48))
+        self.window.blit(self.text_font.render('- Q to Exit', 1, self.TEXT_COLOR), (x_pos, y_pos * .51))
         display.update()
 
     def draw_snake(self, x_pos: int=-1, y_pos: int=-1) -> Tuple:
@@ -147,7 +148,7 @@ class Engine:
 
         # draw each segment of the snake and update
         for x, y in self.snake_body:
-            pygame.draw.rect(self.window, self.GREEN, pygame.Rect(x, y, self.snake_width, self.snake_height))
+            pygame.draw.rect(self.window, self.SNAKE_COLOR, pygame.Rect(x, y, self.snake_width, self.snake_height))
         display.update()
 
         # return current coordinates
@@ -183,7 +184,7 @@ class Engine:
         self.food_coord = coords
 
         # draw food
-        pygame.draw.rect(self.window, self.RED, pygame.Rect(coords[0], coords[1], self.snake_width, self.snake_height))
+        pygame.draw.rect(self.window, self.FOOD_COLOR, pygame.Rect(coords[0], coords[1], self.snake_width, self.snake_height))
 
     def update_score(self, score: int) -> None:
         '''
@@ -198,8 +199,8 @@ class Engine:
         self.score += score
         
         # clear screen and re-render score
-        self.window.fill(self.WHITE)
-        self.score_text = self.score_font.render(f'{self.score}', 1, self.BLUE)
+        self.window.fill(self.BG_COLOR)
+        self.score_text = self.score_font.render(f'{self.score}', 1, self.SCORE_COLOR)
 
     def game_start(self) -> None:
         '''
@@ -219,7 +220,7 @@ class Engine:
 
         # reset game each time
         self.score = 0
-        self.score_text = self.score_font.render(f'{self.score}', 1, self.BLUE)
+        self.score_text = self.score_font.render(f'{self.score}', 1, self.SCORE_COLOR)
         self.food_coord = None
         self.snake_body = [(-1, -1)]
 
@@ -287,7 +288,7 @@ class Engine:
             
             # grab end of the snake and paint over it to make it look like the snake moves
             x_end, y_end = self.snake_body[-1]
-            self.window.fill(self.WHITE, pygame.Rect(x_end, y_end, self.snake_width, self.snake_height))
+            self.window.fill(self.BG_COLOR, pygame.Rect(x_end, y_end, self.snake_width, self.snake_height))
 
             # redraw snake and update prev_coord
             prev_coord = self.draw_snake(new_x, new_y)
@@ -348,12 +349,12 @@ class Engine:
                 file.write(f'{cur_hs}')
 
         # clear window
-        self.window.fill(self.WHITE)
+        self.window.fill(self.BG_COLOR)
         
         # render game over screen with positioning equal to instructions screen
-        msg = self.title_font.render('GAME OVER!', 1, self.BLACK)
-        cur_score = self.score_font.render(f'Score: {self.score}', 1, self.BLUE)
-        high_score = self.score_font.render(f'High Score: {cur_hs}', 1, self.GREEN)
+        msg = self.title_font.render('GAME OVER!', 1, self.TEXT_COLOR)
+        cur_score = self.score_font.render(f'Score: {self.score}', 1, self.SCORE_COLOR)
+        high_score = self.score_font.render(f'High Score: {cur_hs}', 1, self.SNAKE_COLOR)
         x_pos = self.w // 2 - (3 * self.title_font_size)
         y_pos = self.h
 
@@ -377,9 +378,7 @@ class Engine:
                         self.game_start()
 
 if __name__ == '__main__':
-
     '''
     Insert test code for class here, or create test_engine.py file.
     '''
-
     assert False, f'{__file__} is a class file and should be imported into a main file to use its assets'
