@@ -10,6 +10,8 @@ from pygame import display
 from typing import Tuple
 from random import choice
 
+from os.path import isfile
+
 class Engine:
 
     def __init__(self, width: int=800, height: int=800, difficulty: str='hard') -> None:
@@ -22,6 +24,10 @@ class Engine:
 
         Returns: None
         '''
+        # check if high_score.txt exists
+        if not isfile('./snake/src/high_score.txt'):
+            with open('./snake/src/high_score.txt', 'wt') as file:
+                file.write('0')
 
         # initialize pygame assets
         pygame.init()
